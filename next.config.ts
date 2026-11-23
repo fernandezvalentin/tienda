@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
 
+const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
+  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
+  : "*.supabase.co";
+
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
   turbopack: {
     rules: {
       "*.css": {
@@ -11,6 +12,15 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
+  },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/**" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      // Permite imágenes por URL desde cualquier dominio https (cargadas en el admin).
+      // En producción podés restringirlo a los dominios que uses.
+      { protocol: "https", hostname: "**" },
+    ],
   },
 };
 
