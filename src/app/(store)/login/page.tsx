@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { DemoCredentials } from "@/components/DemoBanner";
 
 export const metadata: Metadata = { title: "Ingresar" };
 
@@ -15,6 +16,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
           Registrate
         </Link>
       </p>
+      <DemoCredentials next={typeof next === "string" ? next : undefined} />
       <AuthForm mode="login" next={typeof next === "string" ? next : undefined} />
     </div>
   );

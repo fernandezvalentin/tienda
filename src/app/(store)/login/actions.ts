@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { DEMO_ADMIN, isDemo } from "@/lib/demo/config";
 import { createClient } from "@/lib/supabase/server";
 
 export interface AuthState {
@@ -33,6 +34,16 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
   }
   revalidatePath("/", "layout");
   redirect(safeNext(formData.get("next")));
+}
+
+/** Modo demo: ingresa con el usuario administrador de ejemplo. */
+export async function signInDemoAdmin(formData: FormData) {
+  if (!isDemo) return;
+  const data = new FormData();
+  data.set("email", DEMO_ADMIN.email);
+  data.set("password", DEMO_ADMIN.password);
+  data.set("next", String(formData.get("next") || "/admin"));
+  await signIn({}, data);
 }
 
 export async function signUp(_prev: AuthState, formData: FormData): Promise<AuthState> {
