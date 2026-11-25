@@ -1,152 +1,157 @@
-# Tienda — ecommerce genérico con Next.js + Supabase
+# Tienda — e-commerce platform with Next.js + Supabase
 
-Ecommerce listo para usar en cualquier emprendimiento, comercio o empresa. Todo lo “de marca”
-(nombre, logo, color, contacto, envíos, medios de pago) se configura desde el **panel de administración**,
-sin tocar código.
+**English** · [Español](README.es.md)
 
-### 👉 [Ver demo en vivo](https://tienda-eta-ashy.vercel.app/)
+A ready-to-use online store for any small business, shop or company. Everything brand-related
+(name, logo, color, contact info, shipping, payment methods) is configured from the **admin panel**,
+with no code changes.
 
-Probá la tienda completa: navegá el catálogo, armá un carrito y hacé un pedido. Para ver el panel de
-administración usá el botón **“Entrar al panel admin”** de la franja superior, o ingresá con
-`admin@demo.com` / `demo1234`. Los datos son de ejemplo y lo que cambies solo lo ves vos (ver [Modo demo](#modo-demo)).
+### 👉 [Live demo](https://tienda-eta-ashy.vercel.app/)
+
+Try the whole store: browse the catalog, fill a cart and place an order. To see the admin panel, use the
+**“Entrar al panel admin”** button in the top banner, or sign in with `admin@demo.com` / `demo1234`.
+The data is sample data and your changes are only visible to you (see [Demo mode](#demo-mode)).
+
+> The user interface is in Spanish: the store was built for businesses in Argentina
+> (Argentine peso, Mercado Pago, bank transfers, WhatsApp).
 
 **Stack:** Next.js 16 (App Router, Server Actions) · React 19 · TypeScript · Tailwind CSS 4 · Supabase (Postgres, Auth, Storage) · Mercado Pago Checkout Pro
 
-## Funcionalidades
+## Features
 
-**Tienda**
-- Portada con hero, categorías y productos destacados
-- Catálogo con búsqueda, filtro por categoría, orden y paginación
-- Productos con galería de imágenes y **variantes** (ej. Talle × Color) con precio y stock propios
-- Carrito persistente (localStorage) con control de stock
-- Checkout como invitado o con cuenta: **envío a domicilio** (costo fijo + envío gratis desde un monto) o **retiro en el local**
-- Pagos: **Mercado Pago**, **transferencia** (muestra los datos bancarios) y **efectivo / a coordinar**
-- Página de pedido con estado, instrucciones de pago y botón para enviar el resumen por **WhatsApp**
-- Registro / login, “Mi cuenta” con datos e historial de pedidos
-- SEO: metadata por producto, datos estructurados (JSON-LD), `sitemap.xml` y `robots.txt`
+**Storefront**
+- Home page with hero, categories and featured products
+- Catalog with search, category filter, sorting and pagination
+- Products with image gallery and **variants** (e.g. Size × Color), each with its own price and stock
+- Persistent cart (localStorage) with stock limits
+- Checkout as a guest or with an account: **home delivery** (flat fee + free shipping above a threshold) or **in-store pickup**
+- Payments: **Mercado Pago**, **bank transfer** (shows the bank details) and **cash / arrange with the seller**
+- Order page with status, payment instructions and a button to send the order summary via **WhatsApp**
+- Sign up / sign in, “My account” page with profile and order history
+- SEO: per-product metadata, structured data (JSON-LD), `sitemap.xml` and `robots.txt`
 
-**Administración** (`/admin`)
-- Resumen: ventas del mes, pedidos pendientes, stock bajo
-- Productos: alta/edición, generador de variantes, subida de imágenes a Supabase Storage
-- Categorías
-- Pedidos: búsqueda, filtros y cambio de estado (al cancelar se **devuelve el stock**)
-- Configuración de la tienda (identidad, color, moneda, contacto, envíos, medios de pago)
+**Admin panel** (`/admin`)
+- Dashboard: monthly sales, pending orders, low stock
+- Products: create/edit, variant generator, image upload to Supabase Storage
+- Categories
+- Orders: search, filters and status changes (cancelling an order **restores the stock**)
+- Store settings (branding, color, currency, contact, shipping, payment methods)
 
-**Seguridad**
-- Row Level Security en todas las tablas
-- Los pedidos se crean con la función `create_order` en la base: **los precios y el stock se validan en el servidor**
-  (no se confía en lo que manda el navegador) y el stock se descuenta de forma atómica
-- Un usuario no puede auto-asignarse el rol admin
+**Security**
+- Row Level Security on every table
+- Orders are created by the `create_order` database function: **prices and stock are validated on the server**
+  (nothing sent by the browser is trusted) and stock is decremented atomically
+- Users cannot grant themselves the admin role
 
-## Modo demo
+## Demo mode
 
-Con `NEXT_PUBLIC_DEMO_MODE=1` (o si no hay `NEXT_PUBLIC_SUPABASE_URL`) la tienda funciona **sin Supabase**:
-reemplaza el cliente por una versión en memoria ([`src/lib/demo/`](src/lib/demo)) con la misma interfaz,
-así que el resto del código no cambia. Es lo que usa la [demo publicada](https://tienda-eta-ashy.vercel.app/).
+With `NEXT_PUBLIC_DEMO_MODE=1` (or when `NEXT_PUBLIC_SUPABASE_URL` is not set) the store runs **without Supabase**:
+the client is replaced by an in-memory implementation ([`src/lib/demo/`](src/lib/demo)) with the same interface,
+so the rest of the code stays unchanged. This is what the [live demo](https://tienda-eta-ashy.vercel.app/) uses.
 
-- Carga datos de ejemplo: 13 productos con variantes, 4 categorías y pedidos en distintos estados.
-- Replica la lógica de la base: validación de precios y stock en `create_order`, devolución de stock al cancelar,
-  slugs únicos y relaciones entre tablas.
-- Cada visitante tiene **su propia copia** de los datos (cookie de sesión): lo que edita en el admin no afecta a los demás,
-  y se reinicia solo con el tiempo.
-- Incluye un usuario administrador (`admin@demo.com` / `demo1234`) y un acceso directo al panel.
-- Limitaciones: no se pueden subir imágenes (se cargan por URL) y Mercado Pago está desactivado.
+- Loads sample data: 13 products with variants, 4 categories and orders in different states.
+- Mirrors the database logic: price and stock validation in `create_order`, stock restored on cancellation,
+  unique slugs and table relationships.
+- Every visitor gets **their own copy** of the data (session cookie): admin edits don't affect anyone else,
+  and the data resets on its own after a while.
+- Includes an admin user (`admin@demo.com` / `demo1234`) and a one-click shortcut to the panel.
+- Limitations: image uploads are disabled (images are added by URL) and Mercado Pago is turned off.
 
-Para correrla en local alcanza con:
+To run it locally:
 ```bash
 npm install
 ```
 ```bash
 NEXT_PUBLIC_DEMO_MODE=1 npm run dev
 ```
-(o agregá `NEXT_PUBLIC_DEMO_MODE=1` en `.env.local`).
+(or add `NEXT_PUBLIC_DEMO_MODE=1` to `.env.local`).
 
-## Puesta en marcha (con Supabase)
+## Getting started (with Supabase)
 
-### 1. Crear el proyecto en Supabase
-1. Creá un proyecto en [supabase.com](https://supabase.com).
-2. En **SQL Editor**, ejecutá el contenido de [`supabase/schema.sql`](supabase/schema.sql).
-3. (Opcional) Ejecutá [`supabase/seed.sql`](supabase/seed.sql) para cargar productos de ejemplo.
-4. En **Authentication → URL Configuration** poné tu URL en *Site URL* (ej. `http://localhost:3000`)
-   y agregá `http://localhost:3000/auth/callback` (y la de producción) en *Redirect URLs*.
+### 1. Create the Supabase project
+1. Create a project at [supabase.com](https://supabase.com).
+2. In the **SQL Editor**, run the contents of [`supabase/schema.sql`](supabase/schema.sql).
+3. (Optional) Run [`supabase/seed.sql`](supabase/seed.sql) to load sample products.
+4. In **Authentication → URL Configuration**, set your URL as the *Site URL* (e.g. `http://localhost:3000`)
+   and add `http://localhost:3000/auth/callback` (and your production URL) to *Redirect URLs*.
 
-### 2. Variables de entorno
+### 2. Environment variables
 ```bash
 cp .env.example .env.local
 ```
-Completá `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (Project Settings → API).
-Las de Mercado Pago son opcionales (ver más abajo).
+Fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (Project Settings → API).
+The Mercado Pago variables are optional (see below).
 
-### 3. Correr el proyecto
+### 3. Run the project
 ```bash
 npm install
 ```
 ```bash
 npm run dev
 ```
-Abrí http://localhost:3000.
+Open http://localhost:3000.
 
-### 4. Crear tu usuario administrador
-Registrate desde `/registro` y después, en el SQL Editor de Supabase:
+### 4. Create your admin user
+Sign up at `/registro`, then run this in the Supabase SQL Editor:
 ```sql
 update public.profiles set role = 'admin'
-where id = (select id from auth.users where email = 'tu@email.com');
+where id = (select id from auth.users where email = 'you@example.com');
 ```
-Volvé a ingresar y vas a ver el link **Admin** en el header. Desde **Admin → Configuración**
-cargá el nombre, logo, color, WhatsApp, datos bancarios, envíos, etc.
+Sign in again and you'll see the **Admin** link in the header. From **Admin → Configuración**
+set the store name, logo, color, WhatsApp number, bank details, shipping, etc.
 
 ## Mercado Pago
 
-1. Creá una aplicación en el [panel de desarrolladores](https://www.mercadopago.com.ar/developers/panel/app)
-   (producto: *Checkout Pro*).
-2. Copiá el **Access Token** (para pruebas usá las credenciales de prueba) en `MP_ACCESS_TOKEN`.
-3. Copiá la **clave secreta (service_role / secret)** de Supabase en `SUPABASE_SECRET_KEY`
-   (la usa el webhook para marcar el pedido como pagado; nunca la expongas en el cliente).
-4. En tu aplicación de MP → **Webhooks**, configurá la URL `https://TU-DOMINIO/api/webhooks/mercadopago`
-   con el evento **Pagos**, y copiá la clave secreta en `MP_WEBHOOK_SECRET`.
-5. Activá “Mercado Pago” en **Admin → Configuración**.
+1. Create an application in the [developer dashboard](https://www.mercadopago.com.ar/developers/panel/app)
+   (product: *Checkout Pro*).
+2. Copy the **Access Token** (use the test credentials while testing) into `MP_ACCESS_TOKEN`.
+3. Copy the Supabase **secret key (service_role / secret)** into `SUPABASE_SECRET_KEY`
+   (the webhook uses it to mark orders as paid; never expose it to the client).
+4. In your MP application → **Webhooks**, set the URL `https://YOUR-DOMAIN/api/webhooks/mercadopago`
+   with the **Payments** event, and copy the secret key into `MP_WEBHOOK_SECRET`.
+5. Enable “Mercado Pago” in **Admin → Configuración**.
 
-Flujo: el cliente confirma el pedido → se crea en estado *Pendiente* → se lo redirige a Mercado Pago →
-al aprobarse el pago, el webhook lo pasa a *Pagado*. Si el cliente abandona, desde la página del pedido
-puede reintentar el pago.
+Flow: the customer confirms the order → it is created as *Pending* → the customer is redirected to Mercado Pago →
+once the payment is approved, the webhook moves the order to *Paid*. If the customer leaves, they can retry
+the payment from the order page.
 
-> En `localhost` Mercado Pago no puede llamar al webhook ni hacer `auto_return` (requieren HTTPS público).
-> Para probar el circuito completo en local usá un túnel (ngrok, cloudflared) y poné esa URL en `NEXT_PUBLIC_SITE_URL`.
+> On `localhost`, Mercado Pago can't call the webhook or use `auto_return` (both require public HTTPS).
+> To test the full flow locally, use a tunnel (ngrok, cloudflared) and set that URL in `NEXT_PUBLIC_SITE_URL`.
 
 ## Deploy (Vercel)
-1. Subí el repo a GitHub e importalo en [Vercel](https://vercel.com).
-2. Cargá las mismas variables de entorno, con `NEXT_PUBLIC_SITE_URL` = tu dominio.
-3. Agregá `https://TU-DOMINIO/auth/callback` en las Redirect URLs de Supabase.
+1. Push the repo to GitHub and import it in [Vercel](https://vercel.com).
+2. Add the same environment variables, with `NEXT_PUBLIC_SITE_URL` = your domain.
+3. Add `https://YOUR-DOMAIN/auth/callback` to the Supabase Redirect URLs.
 
-Para publicar solo la demo, alcanza con una variable de entorno: `NEXT_PUBLIC_DEMO_MODE` = `1`.
+To deploy only the demo, a single environment variable is enough: `NEXT_PUBLIC_DEMO_MODE` = `1`.
 
-## Estructura
+## Project structure
 ```
 supabase/
-  schema.sql            # tablas, RLS, funciones (create_order, get_order), storage
-  seed.sql              # datos de ejemplo
+  schema.sql            # tables, RLS, functions (create_order, get_order), storage
+  seed.sql              # sample data
 src/
-  proxy.ts              # refresca la sesión y protege /admin y /cuenta
+  proxy.ts              # refreshes the session and protects /admin and /cuenta
   app/
-    (store)/            # tienda: home, productos, carrito, checkout, pedido, login, cuenta
-    admin/              # panel de administración + actions.ts
+    (store)/            # storefront: home, products, cart, checkout, order, login, account
+    admin/              # admin panel + actions.ts
     api/webhooks/mercadopago/route.ts
-  components/           # UI (carrito, producto, checkout, admin)
+  components/           # UI (cart, product, checkout, admin)
   lib/
-    supabase/           # clientes server / browser / admin
-    demo/               # modo demo: datos de ejemplo y cliente en memoria
-    data.ts             # consultas del catálogo
-    settings.ts         # configuración de la tienda
-    mercadopago.ts      # preferencia de pago, consulta de pagos, firma de webhook
+    supabase/           # server / browser / admin clients
+    demo/               # demo mode: sample data and in-memory client
+    data.ts             # catalog queries
+    settings.ts         # store settings
+    mercadopago.ts      # payment preference, payment lookup, webhook signature
     types.ts, format.ts
 ```
 
-## Personalización rápida
-- **Colores:** el color principal se edita en Admin → Configuración (variable CSS `--brand`, clases `bg-brand`, `text-brand`).
-  El resto del estilo está en `src/app/globals.css` (clases `btn-primary`, `input`, `card`…).
-- **Moneda y formato:** Admin → Configuración (`ARS` / `es-AR`, `MXN` / `es-MX`, `USD` / `en-US`, etc.).
-- **Imágenes externas:** `next.config.ts` permite cualquier dominio HTTPS; restringilo si querés.
+## Customization
+- **Colors:** the main color is set in Admin → Configuración (CSS variable `--brand`, classes `bg-brand`, `text-brand`).
+  The rest of the styles live in `src/app/globals.css` (classes `btn-primary`, `input`, `card`…).
+- **Currency and formatting:** Admin → Configuración (`ARS` / `es-AR`, `MXN` / `es-MX`, `USD` / `en-US`, etc.).
+- **External images:** `next.config.ts` allows any HTTPS domain; restrict it if you like.
 
-## Ideas para seguir
-Cupones de descuento · envío por zonas o con cotizador (Andreani, OCA, Correo Argentino) ·
-emails transaccionales (Resend) · reseñas · wishlist · reportes de ventas.
+## Roadmap ideas
+Discount coupons · zone-based shipping or carrier quotes (Andreani, OCA, Correo Argentino) ·
+transactional emails (Resend) · reviews · wishlist · sales reports.
