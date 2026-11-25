@@ -4,6 +4,12 @@ Ecommerce listo para usar en cualquier emprendimiento, comercio o empresa. Todo 
 (nombre, logo, color, contacto, envíos, medios de pago) se configura desde el **panel de administración**,
 sin tocar código.
 
+### 👉 [Ver demo en vivo](https://tienda-eta-ashy.vercel.app/)
+
+Probá la tienda completa: navegá el catálogo, armá un carrito y hacé un pedido. Para ver el panel de
+administración usá el botón **“Entrar al panel admin”** de la franja superior, o ingresá con
+`admin@demo.com` / `demo1234`. Los datos son de ejemplo y lo que cambies solo lo ves vos (ver [Modo demo](#modo-demo)).
+
 **Stack:** Next.js 16 (App Router, Server Actions) · React 19 · TypeScript · Tailwind CSS 4 · Supabase (Postgres, Auth, Storage) · Mercado Pago Checkout Pro
 
 ## Funcionalidades
@@ -32,7 +38,30 @@ sin tocar código.
   (no se confía en lo que manda el navegador) y el stock se descuenta de forma atómica
 - Un usuario no puede auto-asignarse el rol admin
 
-## Puesta en marcha
+## Modo demo
+
+Con `NEXT_PUBLIC_DEMO_MODE=1` (o si no hay `NEXT_PUBLIC_SUPABASE_URL`) la tienda funciona **sin Supabase**:
+reemplaza el cliente por una versión en memoria ([`src/lib/demo/`](src/lib/demo)) con la misma interfaz,
+así que el resto del código no cambia. Es lo que usa la [demo publicada](https://tienda-eta-ashy.vercel.app/).
+
+- Carga datos de ejemplo: 13 productos con variantes, 4 categorías y pedidos en distintos estados.
+- Replica la lógica de la base: validación de precios y stock en `create_order`, devolución de stock al cancelar,
+  slugs únicos y relaciones entre tablas.
+- Cada visitante tiene **su propia copia** de los datos (cookie de sesión): lo que edita en el admin no afecta a los demás,
+  y se reinicia solo con el tiempo.
+- Incluye un usuario administrador (`admin@demo.com` / `demo1234`) y un acceso directo al panel.
+- Limitaciones: no se pueden subir imágenes (se cargan por URL) y Mercado Pago está desactivado.
+
+Para correrla en local alcanza con:
+```bash
+npm install
+```
+```bash
+NEXT_PUBLIC_DEMO_MODE=1 npm run dev
+```
+(o agregá `NEXT_PUBLIC_DEMO_MODE=1` en `.env.local`).
+
+## Puesta en marcha (con Supabase)
 
 ### 1. Crear el proyecto en Supabase
 1. Creá un proyecto en [supabase.com](https://supabase.com).
@@ -89,6 +118,8 @@ puede reintentar el pago.
 2. Cargá las mismas variables de entorno, con `NEXT_PUBLIC_SITE_URL` = tu dominio.
 3. Agregá `https://TU-DOMINIO/auth/callback` en las Redirect URLs de Supabase.
 
+Para publicar solo la demo, alcanza con una variable de entorno: `NEXT_PUBLIC_DEMO_MODE` = `1`.
+
 ## Estructura
 ```
 supabase/
@@ -103,6 +134,7 @@ src/
   components/           # UI (carrito, producto, checkout, admin)
   lib/
     supabase/           # clientes server / browser / admin
+    demo/               # modo demo: datos de ejemplo y cliente en memoria
     data.ts             # consultas del catálogo
     settings.ts         # configuración de la tienda
     mercadopago.ts      # preferencia de pago, consulta de pagos, firma de webhook
